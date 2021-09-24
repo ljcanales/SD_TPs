@@ -11,12 +11,11 @@
 #define SERVER_ADDRESS  "10.0.2.15"     /* server IP */
 #define PORT            8080 
 
-/* Test sequences */
-int  respuesta= 0;
+int  respuesta = 0;
 char buf_tx[100];
 char buf_rx[100];   /* receive buffer */
 
-/* This clients connects, sends a text and disconnects */
+
 int main(int argc, char* argv[]) {
     if(argc != 2) {
         printf("\nUso:\t./cliente <mensaje>\n\n");
@@ -50,7 +49,7 @@ int main(int argc, char* argv[]) {
 
     printf("[CLIENT] Connected to the server..\n");
 
-    /* send test sequences*/
+    /* send */
     send(sockfd, buf_tx, sizeof(buf_tx), 0);
     respuesta =  recv(sockfd, buf_rx, sizeof(buf_rx), 0);
     if(respuesta == -1) {
@@ -60,7 +59,6 @@ int main(int argc, char* argv[]) {
     } else {
         printf("[CLIENT] Message received: %s \n", buf_rx);
     }
-    /*comprobar lo de arriba*/
 
     /* close client socket */
     printf("[CLIENT] Closing socket\n\n");
