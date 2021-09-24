@@ -12,10 +12,10 @@
 #define FILES_DIRECTORY "./server_files/" // directorio base de archivos
 #define MAX_CACHE 512000000 // 512MB
 
-/* server parameters */
-#define SERV_PORT       8080              /* port */ /*10.0.2.15*/
-#define BUF_SIZE        100               /* Buffer rx, tx max size  */
-#define BACKLOG         5                 /* Max. client pending connections  */
+// server parameters
+#define SERV_PORT 8080
+#define BUF_SIZE 100
+#define BACKLOG 5
 
 using namespace std;
 
@@ -36,8 +36,8 @@ int main(int argc, char const *argv[]) {
     char buff_rx[BUF_SIZE];
 
     // SOCKET CREATION
-    if (sockfd = socket(AF_INET, SOCK_STREAM, 0) == -1) {
-        cout << endl << "[SERVER-error]: socket creation failed" << endl;
+    if((sockfd = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
+        perror("[SERVER-error]: socket creation failed");
         exit(EXIT_FAILURE);
     } else {
         cout << endl << "[SERVER]: Socket successfully created.." <<endl; 
@@ -47,18 +47,18 @@ int main(int argc, char const *argv[]) {
 
     // SOCKET CONFIGURATION
     servaddr.sin_family      = AF_INET;
-    servaddr.sin_addr.s_addr = INADDR_ANY; // inet_addr(SERV_HOST_ADDR);
+    servaddr.sin_addr.s_addr =  INADDR_ANY;
     servaddr.sin_port        = htons(SERV_PORT);
 
-    if ((bind(sockfd, (struct sockaddr *)&servaddr, sizeof(servaddr))) != 0) {
-        cout << endl << "[SERVER-error]: socket creation failed" << endl;
+    if ((bind(sockfd, (struct sockaddr *) &servaddr, sizeof(servaddr))) != 0) {
+        perror("[SERVER-error]: socket bind failed");
         exit(EXIT_FAILURE);
     } else {
         cout << endl << "[SERVER] Socket successfully binded" << endl;
     }
 
     if ((listen(sockfd, BACKLOG)) != 0) {
-        cout << endl << "[SERVER-error]: socket listen failed." << endl;
+        perror("[SERVER-error]: socket listen failed.");
         exit(EXIT_FAILURE);
     } else {
         cout << "[SERVER] Listening on PORT "<< SERV_PORT << endl;
@@ -66,8 +66,8 @@ int main(int argc, char const *argv[]) {
 
 
     while(1) {
-        if(connfd = accept(sockfd, (struct sockaddr *)&client, &len) < 0) {
-            cout << endl << "[SERVER-error]: connection not accepted." << endl;
+        if((connfd = accept(sockfd, (struct sockaddr *)&client, &len)) < 0) {
+            perror("[SERVER-error]: connection not accepted.");
             exit(EXIT_FAILURE);
         } else {
             cout << "Dirección IP del cliente:" << client.sin_addr.s_addr << endl;
@@ -75,7 +75,7 @@ int main(int argc, char const *argv[]) {
                 len_rx = recv(connfd, buff_rx, sizeof(buff_rx), 0);
 
                 if(len_rx == -1) {
-                    cout << endl << "[SERVER-error]: connfd cannot be read." << endl;
+                    perror("[SERVER-error]: connfd cannot be read.");
                 }
                 else if(len_rx == 0) { /* if length is 0 client socket closed, then exit */
                     cout << endl << "[SERVER] Client socket closed" << endl;
@@ -91,9 +91,6 @@ int main(int argc, char const *argv[]) {
                 }
             }
         }
-
-
-
     }
 }
 
