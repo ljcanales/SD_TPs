@@ -55,6 +55,7 @@ int main(int argc, char const *argv[]) {
     ofstream file;
 
     int total_size = 0;
+    cout << "[CLIENT] Recibiendo... " << endl;
     while (1) {
         char buff_rx[BUFFER_SIZE] = "";
         respuesta = recv(sockfd, buff_rx, sizeof(buff_rx), 0);
@@ -66,7 +67,6 @@ int main(int argc, char const *argv[]) {
         } else {
             if(string(buff_rx) == ERROR_RESPUESTA)
                 break;
-            cout << "Recibiendo: " << respuesta << endl;
             total_size += respuesta;
             if (!file.is_open()) {
                 file.open(file_path);
@@ -76,7 +76,7 @@ int main(int argc, char const *argv[]) {
     }
     if(file.is_open()){
         file.close();
-        cout << "Se guardo el archivo en: " << file_path << "(size: " << total_size << ")" << endl;
+        cout << "Se guardo el archivo en: " << file_path << " (" << total_size << " bytes)" << endl;
     }
 
     close(sockfd);

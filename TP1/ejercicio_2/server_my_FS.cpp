@@ -116,22 +116,22 @@ char * get_file(string filename){
                 cout << " verificando espacio en cache" << endl;
                 while(cache_used_size + size > MAX_CACHE) {
                     string aux = cache.begin()->first;
+                    cout << " eliminando de cache archivo: " << aux << "(" << file_sizes[aux] << " bytes)" << endl;
                     cache.erase(aux);
                     cache_used_size -= file_sizes[aux];
                     file_sizes.erase(aux);
-                    cout << " eliminando de cache archivo: " << aux << endl;
                 }
-                cout << " agregando archivo a cache" << endl;
+                cout << " agregando archivo a cache: "  << filename << "(" << size << " bytes)" << endl;
                 cache[filename] = file_content;
                 file_sizes[filename] = size;
                 cache_used_size += size;
             }
         } else {
             cout <<" el archivo no se encuentra en directorio  "<< endl;
-            return "FILE_NOT_FOUND";
+            return (char*)"FILE_NOT_FOUND";
         }
     } else {
-        cout << " el archivo se encuentra en cache " << endl;
+        cout << " el archivo se encuentra en cache: "  << filename << "(" << file_sizes[filename] << " bytes)" << endl;
         file_content = new char[file_sizes[filename]];
         strcpy(file_content, cache[filename].c_str());
     }
