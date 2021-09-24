@@ -30,7 +30,7 @@ int main(int argc, char const *argv[]) {
     
     int sockfd, connfd ;  /* listening socket and connection socket file descriptors */
     struct sockaddr_in servaddr, client;
-    unsigned int len;     /* length of client address */
+    int len = sizeof(client);     /* length of client address */
 
     int  len_rx = 0;
     char buff_rx[BUF_SIZE];
@@ -40,15 +40,15 @@ int main(int argc, char const *argv[]) {
         perror("[SERVER-error]: socket creation failed");
         exit(EXIT_FAILURE);
     } else {
-        cout << endl << "[SERVER]: Socket successfully created.." <<endl; 
+        cout << endl << "[SERVER]: Socket successfully created.." << endl; 
     }
 
     memset(&servaddr, 0, sizeof(servaddr));
 
     // SOCKET CONFIGURATION
-    servaddr.sin_family      = AF_INET;
-    servaddr.sin_addr.s_addr =  INADDR_ANY;
-    servaddr.sin_port        = htons(SERV_PORT);
+    servaddr.sin_family = AF_INET;
+    servaddr.sin_addr.s_addr = INADDR_ANY;
+    servaddr.sin_port = htons(SERV_PORT);
 
     if ((bind(sockfd, (struct sockaddr *) &servaddr, sizeof(servaddr))) != 0) {
         perror("[SERVER-error]: socket bind failed");
@@ -61,18 +61,19 @@ int main(int argc, char const *argv[]) {
         perror("[SERVER-error]: socket listen failed.");
         exit(EXIT_FAILURE);
     } else {
-        cout << "[SERVER] Listening on PORT "<< SERV_PORT << endl;
+        cout << "[SERVER] Listening on IP " << inet_ntoa(servaddr.sin_addr) << endl;
+        cout << "[SERVER] Listening on PORT " << SERV_PORT << endl;
     }
 
 
     while(1) {
-        if((connfd = accept(sockfd, (struct sockaddr *)&client, &len)) < 0) {
+        if((connfd = accept(sockfd, (struct sockaddr *) &client, (socklen_t *) &len)) < 0) {
             perror("[SERVER-error]: connection not accepted.");
             exit(EXIT_FAILURE);
         } else {
-            cout << "Dirección IP del cliente:" << client.sin_addr.s_addr << endl;
+            cout << "Dirección IP del cliente:" << inet_ntoa(client.sin_addr) << endl;
             while(1) {
-                len_rx = recv(connfd, buff_rx, sizeof(buff_rx), 0);
+                len_rx = recv(connfd, &buff_rx, sizeof(buff_rx), 0);
 
                 if(len_rx == -1) {
                     perror("[SERVER-error]: connfd cannot be read.");
@@ -85,7 +86,11 @@ int main(int argc, char const *argv[]) {
                     
                     cout << "[SERVER] Archivo solicitado: " << buff_rx << endl;
 
+                   
+                    //char *b = buff_rx;
+                    //char *b = "test.txt";
                     char *file_content = get_file(buff_rx);
+                    
                     
                     send(connfd,file_content, strlen(file_content), 0);
                 }
@@ -98,6 +103,7 @@ char * get_file(string filename){
     string file_path = FILES_DIRECTORY;
     file_path += filename;
     char *file_content;
+    cout<< " searching for: " + file_path << endl;
     // check if file in cache
     if(cache.find(filename) == cache.end()) {
         cout << " el archivo no se encuentra en cache " << endl;
@@ -127,7 +133,7 @@ char * get_file(string filename){
             }
         } else {
             cout <<" el archivo no se encuentra en directorio  "<< endl;
-            strcpy(file_content, "FILE_NOT_FOUND");
+            return "FILE_NOT_FOUND";
         }
     } else {
         cout << " el archivo se encuentra en cache " << endl;

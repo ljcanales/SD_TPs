@@ -54,7 +54,7 @@ int main(int argc, char* argv[]) {
     respuesta =  recv(sockfd, buf_rx, sizeof(buf_rx), 0);
     if(respuesta == -1) {
         printf("error");
-    } else if(respuesta == 0) { /* if length is 0 client socket closed, then exit */
+    } else if(respuesta == 0) {
         printf("[respuesta  ]: 0 \n\n");
     } else {
         printf("[CLIENT] Message received: %s \n", buf_rx);
