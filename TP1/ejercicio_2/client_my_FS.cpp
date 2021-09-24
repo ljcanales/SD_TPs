@@ -12,6 +12,7 @@
 
 #define FILES_DIRECTORY "./client_files/"
 #define BUFFER_SIZE 1024
+#define ERROR_RESPUESTA "FILE_NOT_FOUND"
 int respuesta = 0;
 using namespace std;
 
@@ -49,17 +50,34 @@ int main(int argc, char const *argv[]) {
 
     send(sockfd, filename, strlen(filename), 0);
 
-    char buff_rx[BUFFER_SIZE];
-    respuesta = recv(sockfd, buff_rx, sizeof(buff_rx), 0);
-    if(respuesta == -1) {
-        perror("error");
-    } else if(respuesta == 0) {
-        cout << "[respuesta  ]: 0 " << endl;
-    } else {
-        //printf("[CLIENT] Message received: %s \n", buf_rx);
-        cout << buff_rx << endl;
-    }
-   
-    close(sockfd);
+    string file_path = FILES_DIRECTORY;
+    file_path += filename;
+    ofstream file;
 
+    int total_size = 0;
+    while (1) {
+        char buff_rx[BUFFER_SIZE] = "";
+        respuesta = recv(sockfd, buff_rx, sizeof(buff_rx), 0);
+        if(respuesta == -1) {
+            perror("error");
+        } else if(respuesta == 0) {
+            cout << "[CLIENT] Fin recepción " << endl;
+            break;
+        } else {
+            if(string(buff_rx) == ERROR_RESPUESTA)
+                break;
+            cout << "Recibiendo: " << respuesta << endl;
+            total_size += respuesta;
+            if (!file.is_open()) {
+                file.open(file_path);
+                file << buff_rx;
+            }   
+        }
+    }
+    if(file.is_open()){
+        file.close();
+        cout << "Se guardo el archivo en: " << file_path << "(size: " << total_size << ")" << endl;
+    }
+
+    close(sockfd);
 }
