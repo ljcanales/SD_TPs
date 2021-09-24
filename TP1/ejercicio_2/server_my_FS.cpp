@@ -33,7 +33,6 @@ int main(int argc, char const *argv[]) {
     int len = sizeof(client);     /* length of client address */
 
     int  len_rx = 0;
-    char buff_rx[BUF_SIZE];
 
     // SOCKET CREATION
     if((sockfd = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
@@ -65,8 +64,9 @@ int main(int argc, char const *argv[]) {
         cout << "[SERVER] Listening on PORT " << SERV_PORT << endl;
     }
 
-
     while(1) {
+        char buff_rx[BUF_SIZE] = "";
+
         if((connfd = accept(sockfd, (struct sockaddr *) &client, (socklen_t *) &len)) < 0) {
             perror("[SERVER-error]: connection not accepted.");
             exit(EXIT_FAILURE);
@@ -83,16 +83,11 @@ int main(int argc, char const *argv[]) {
                     close(connfd);
                     break;
                 } else {
-                    
                     cout << "[SERVER] Archivo solicitado: " << buff_rx << endl;
-
-                   
-                    //char *b = buff_rx;
-                    //char *b = "test.txt";
                     char *file_content = get_file(buff_rx);
-                    
-                    
                     send(connfd,file_content, strlen(file_content), 0);
+                    close(connfd);
+                    break;
                 }
             }
         }
