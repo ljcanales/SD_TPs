@@ -5,7 +5,7 @@ using namespace std;
 
 int main(int argc, char* argv[]) {
 	if (argc != 4) {
-		cerr << "Uso: cliente_calculadora <server> <op1> <op2>" << endl;
+		cerr << "Uso: ./client <server> <op1> <op2>" << endl;
 		return 1;
 	}
 	char *server = argv[1];
