@@ -79,7 +79,7 @@ char** get_file_1_svc(char **str, struct svc_req* req) {
 }
 
 
-int* realease_1_svc(char **str, struct svc_req* req) {
+int* release_file_1_svc(char **str, struct svc_req* req) {
     static int number;
     int var;
     string filename = string(*str);
@@ -93,4 +93,35 @@ int* realease_1_svc(char **str, struct svc_req* req) {
         }
     }
     return &number;
+}
+
+char** get_state_1_svc(void *args, struct svc_req* req) {
+    static char *result;
+    string state_info = string("");
+
+    auto iter = semaphores.begin();
+    state_info += "lock : estado : cantidad de clientes en esperando" ;
+    state_info += "\n";
+    while (iter != semaphores.end()) {
+        state_info += iter->first;
+        state_info += " : ";
+        int cant;
+        sem_getvalue(&iter->second, &cant);
+
+        state_info += cant <= 0 ? "concedido" : "libre";
+        state_info += " : ";
+        if((cant >= 0)) {
+            cant = 0;
+        }else if (cant < 0)
+        {
+            cant = cant*(-1)+1;
+        }
+        state_info += to_string(cant);
+        state_info += "\n";
+        ++iter;
+    }
+    
+    result = new char[state_info.size()];
+    strcpy(result, state_info.c_str());
+    return &result;
 }
