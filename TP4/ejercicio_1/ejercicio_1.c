@@ -24,7 +24,7 @@ int main(int argc, char *argv[]) {
     {
         tid = omp_get_thread_num();
         /*bucle paralelo con openmp y n iteraciones */
-        #pragma omp for schedule(dynamic)
+        #pragma omp for schedule(static)
         for (i = 0; i < 65536; i++) {
             conv(tid, i);
         }
